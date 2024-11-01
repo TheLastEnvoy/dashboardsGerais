@@ -41,10 +41,10 @@ with tab1:
     else:
         objetivos = ['Todos']
 
-    selected_tipo_documento = st.sidebar.selectbox("Selecione um tipo de documento:", tipos_documento, key="tipo_documento")
-    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento")
-    selected_nome_t1 = st.sidebar.selectbox("Selecione um nome T1:", nomes_t1, key="nome_t1")
-    selected_objetivo = st.sidebar.selectbox("Selecione um objetivo:", objetivos, key="objetivo")
+    selected_tipo_documento = st.sidebar.selectbox("Selecione um tipo de documento:", tipos_documento, key="tipo_documento_pgt")
+    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento_pgt")
+    selected_nome_t1 = st.sidebar.selectbox("Selecione um nome T1:", nomes_t1, key="nome_t1_pgt")
+    selected_objetivo = st.sidebar.selectbox("Selecione um objetivo:", objetivos, key="objetivo_pgt")
 
     # Filtrar por tipo de documento
     if selected_tipo_documento != "Todos":
@@ -269,11 +269,11 @@ with tab4:
     end_date = datetime.now().date()
 
     # Filtros laterais
-    selected_tecnico = st.sidebar.selectbox("Selecione um técnico:", tecnicos, key="tecnico")
-    selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio")
-    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento")
-    selected_tipo_laudo = st.sidebar.selectbox("Selecione um tipo de laudo:", tipos_de_laudo, key="tipo_laudo")
-    selected_modalidade = st.sidebar.selectbox("Selecione uma modalidade:", modalidade, key="modalidade")
+    selected_tecnico = st.sidebar.selectbox("Selecione um técnico:", tecnicos, key="tecnico_laudos")
+    selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio_laudos")
+    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento_laudos")
+    selected_tipo_laudo = st.sidebar.selectbox("Selecione um tipo de laudo:", tipos_de_laudo, key="tipo_laudo_laudos")
+    selected_modalidade = st.sidebar.selectbox("Selecione uma modalidade:", modalidade, key="modalidade_laudos")
 
     # Filtrar por técnico
     if selected_tecnico != "Todos":
@@ -296,8 +296,8 @@ with tab4:
         df_laudos = df_laudos[df_laudos['Modalidade'] == selected_modalidade]
 
     # Filtrar por data
-    start_date = st.sidebar.date_input("Data inicial:", start_date, key="start_date")
-    end_date = st.sidebar.date_input("Data final:", end_date, key="end_date")
+    start_date = st.sidebar.date_input("Data inicial:", start_date, key="start_date_laudos")
+    end_date = st.sidebar.date_input("Data final:", end_date, key="end_date_laudos")
     df_laudos['Data'] = pd.to_datetime(df_laudos['Data'], format='%d/%m/%Y').dt.date
     df_laudos = df_laudos[(df_laudos['Data'] >= start_date) & (df_laudos['Data'] <= end_date)]
 
