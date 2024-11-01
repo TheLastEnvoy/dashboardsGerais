@@ -330,3 +330,65 @@ with tab4:
     # Exibir quadro com os totais
     st.subheader("Quantidade de laudos por tipo")
     st.write(total_por_tipo_laudo)
+
+    # Gráfico de progresso para laudos de vistoria
+    st.subheader("Progresso dos Laudos de Vistoria")
+    laudos_vistoria_atual = df_laudos[df_laudos['Tipo de Laudo'] == 'Vistoria'].shape[0]
+    total_vistoria_a_atingir = 4739
+
+    fig_progress_vistoria = go.Figure()
+
+    fig_progress_vistoria.add_trace(go.Bar(
+        name='Concluídos',
+        x=['Laudos de Vistoria'],
+        y=[laudos_vistoria_atual],
+        marker_color='green'
+    ))
+
+    fig_progress_vistoria.add_trace(go.Bar(
+        name='Faltando',
+        x=['Laudos de Vistoria'],
+        y=[max(0, total_vistoria_a_atingir - laudos_vistoria_atual)],
+        marker_color='lightgrey'
+    ))
+
+    fig_progress_vistoria.update_layout(
+        barmode='stack',
+        title='Progresso dos Laudos de Vistoria',
+        xaxis_title='Status',
+        yaxis_title='Número de Laudos',
+        yaxis=dict(range=[0, total_vistoria_a_atingir])
+    )
+
+    st.plotly_chart(fig_progress_vistoria)
+
+    # Gráfico de progresso para laudos de mutirão
+    st.subheader("Progresso dos Laudos de Mutirão")
+    laudos_mutirao_atual = df_laudos[df_laudos['Tipo de Laudo'] == 'Mutirão'].shape[0]
+    total_mutirao_a_atingir = 2746
+
+    fig_progress_mutirao = go.Figure()
+
+    fig_progress_mutirao.add_trace(go.Bar(
+        name='Concluídos',
+        x=['Laudos de Mutirão'],
+        y=[laudos_mutirao_atual],
+        marker_color='green'
+    ))
+
+    fig_progress_mutirao.add_trace(go.Bar(
+        name='Faltando',
+        x=['Laudos de Mutirão'],
+        y=[max(0, total_mutirao_a_atingir - laudos_mutirao_atual)],
+        marker_color='lightgrey'
+    ))
+
+    fig_progress_mutirao.update_layout(
+        barmode='stack',
+        title='Progresso dos Laudos de Mutirão',
+        xaxis_title='Status',
+        yaxis_title='Número de Laudos',
+        yaxis=dict(range=[0, total_mutirao_a_atingir])
+    )
+
+    st.plotly_chart(fig_progress_mutirao)
