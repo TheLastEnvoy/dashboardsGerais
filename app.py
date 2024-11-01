@@ -333,7 +333,7 @@ with tab4:
 
     # Gráfico de progresso para laudos de vistoria
     st.subheader("Progresso dos Laudos de Vistoria")
-    laudos_vistoria_atual = df_laudos[df_laudos['Tipo de Laudo'] == 'Vistoria'].shape[0]
+    laudos_vistoria_atual = df_laudos[df_laudos['Modalidade'] == 'VISTORIA IN LOCO'].shape[0]
     total_vistoria_a_atingir = 4739
 
     fig_progress_vistoria = go.Figure()
@@ -364,7 +364,7 @@ with tab4:
 
     # Gráfico de progresso para laudos de mutirão
     st.subheader("Progresso dos Laudos de Mutirão")
-    laudos_mutirao_atual = df_laudos[df_laudos['Tipo de Laudo'] == 'Mutirão'].shape[0]
+    laudos_mutirao_atual = df_laudos[df_laudos['Modalidade'] == 'MUTIRÃO'].shape[0]
     total_mutirao_a_atingir = 2746
 
     fig_progress_mutirao = go.Figure()
