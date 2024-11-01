@@ -5,8 +5,8 @@ import plotly.graph_objects as go
 
 # Função para carregar dados de uma aba específica do Excel
 @st.cache
-def load_data(sheet_name, file_path):
-    return pd.read_excel(file_path, sheet_name=sheet_name)
+def load_data(sheet_name):
+    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=sheet_name)
 
 # Título do dashboard principal
 st.title("Dashboard Consolidado")
@@ -17,8 +17,7 @@ tab1, tab2 = st.tabs(["Dashboard de Documentos PGT", "Dashboard de Planilhas"])
 # Conteúdo do primeiro dashboard (Documentos PGT)
 with tab1:
     st.header("Dashboard de Documentos PGT")
-    file_path_pgt = "docsPGTWeb_SO_01nov2024.xlsx"
-    df_pgt = load_data(sheet_name='contPGT', file_path=file_path_pgt)
+    df_pgt = load_data(sheet_name='contPGT')
 
     # Preencher valores vazios na coluna "Objetivo" com "Não especificado"
     if 'Objetivo' in df_pgt.columns:
@@ -125,8 +124,7 @@ with tab1:
 # Conteúdo do segundo dashboard (Planilhas)
 with tab2:
     st.header("Dashboard de Planilhas")
-    file_path_planilhas = "contPGT_contPlanilhas.xlsx"
-    data_planilhas = load_data(sheet_name='contPlanilhas', file_path=file_path_planilhas)
+    data_planilhas = load_data(sheet_name='contPlanilhas')
 
     # Tabela com total de planilhas e abas
     st.header("Totais")
