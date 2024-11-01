@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from datetime import datetime
+import unicodedata
 
 # Função para carregar dados de uma aba específica do Excel
 @st.cache
@@ -12,7 +14,12 @@ def load_data(sheet_name):
 st.title("Dashboard Consolidado")
 
 # Criar abas para diferentes dashboards
-tab1, tab2, tab3 = st.tabs(["Dashboard de Documentos PGT", "Dashboard de Planilhas", "Dashboard de Pareceres"])
+tab1, tab2, tab3, tab4 = st.tabs([
+    "Dashboard de Documentos PGT",
+    "Dashboard de Planilhas",
+    "Dashboard de Pareceres",
+    "Dashboard de Laudos"
+])
 
 # Conteúdo do primeiro dashboard (Documentos PGT)
 with tab1:
@@ -238,3 +245,88 @@ with tab3:
     # Exibir quadro com os totais por formato e andamento
     st.subheader("Quantidade de pareceres por formato e andamento")
     st.write(total_por_formato_andamento)
+
+# Conteúdo do quarto dashboard (Laudos)
+with tab4:
+    st.header("(SO - TED INCRA/UFPR) - Laudos de Supervisão Ocupacional")
+    df_laudos = load_data(sheet_name='contLaudos')
+
+    # Função para remover caracteres especiais e normalizar texto
+    def remove_special_chars(text):
+        return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
+
+    # Ordenar opções de pesquisa
+    tecnicos = ['Todos'] + sorted(list(df_laudos['Técnico'].unique()))
+    assentamentos = ['Todos'] + sorted(list(df_laudos['Assentamento'].unique()))
+    tipos_de_laudo = ['Todos'] + sorted(list(df_laudos['Tipo de Laudo'].unique()))
+    municipios = ['Todos'] + sorted(list(df_laudos['Município'].apply(remove_special_chars).unique()))
+    modalidade = ['Todos'] + sorted(list(df_laudos['Modalidade'].unique()))
+
+    # Data inicial padrão: 01/01/2022
+    start_date = datetime(2022, 1, 1).date()
+
+    # Data final padrão: dia atual
+    end_date = datetime.now().date()
+
+    # Filtros laterais
+    selected_tecnico = st.sidebar.selectbox("Selecione um técnico:", tecnicos, key="tecnico")
+    selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio")
+    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento")
+    selected_tipo_laudo = st.sidebar.selectbox("Selecione um tipo de laudo:", tipos_de_laudo, key="tipo_laudo")
+    selected_modalidade = st.sidebar.selectbox("Selecione uma modalidade:", modalidade, key="modalidade")
+
+    # Filtrar por técnico
+    if selected_tecnico != "Todos":
+        df_laudos = df_laudos[df_laudos['Técnico'] == selected_tecnico]
+
+    # Filtrar por município
+    if selected_municipio != "Todos":
+        df_laudos = df_laudos[df_laudos['Município'].apply(remove_special_chars) == remove_special_chars(selected_municipio)]
+
+    # Filtrar por assentamento
+    if selected_assentamento != "Todos":
+        df_laudos = df_laudos[df_laudos['Assentamento'] == selected_assentamento]
+
+    # Filtrar por tipo de laudo
+    if selected_tipo_laudo != "Todos":
+        df_laudos = df_laudos[df_laudos['Tipo de Laudo'] == selected_tipo_laudo]
+
+    # Filtrar por modalidade
+    if selected_modalidade != "Todos":
+        df_laudos = df_laudos[df_laudos['Modalidade'] == selected_modalidade]
+
+    # Filtrar por data
+    start_date = st.sidebar.date_input("Data inicial:", start_date, key="start_date")
+    end_date = st.sidebar.date_input("Data final:", end_date, key="end_date")
+    df_laudos['Data'] = pd.to_datetime(df_laudos['Data'], format='%d/%m/%Y').dt.date
+    df_laudos = df_laudos[(df_laudos['Data'] >= start_date) & (df_laudos['Data'] <= end_date)]
+
+    # Exibir tabela interativa
+    st.subheader("Relação de laudos")
+    st.write(df_laudos)
+
+    # Exibir gráfico interativo
+    st.subheader("Gráfico de barras - tipo de laudo")
+    chart_data = df_laudos['Tipo de Laudo'].value_counts()
+    st.bar_chart(chart_data)
+
+    # Gráfico de pizza
+    st.subheader("Gráfico de pizza - tipo de laudo")
+    pie_chart_data = df_laudos['Tipo de Laudo'].value_counts()
+    fig = px.pie(names=pie_chart_data.index, values=pie_chart_data.values, title='Distribuição dos Laudos')
+    st.plotly_chart(fig)
+
+    # Calcular o total de laudos para cada tipo de laudo
+    total_por_tipo_laudo = df_laudos['Tipo de Laudo'].value_counts()
+
+    # Calcular o total de laudos
+    total_de_laudos = total_por_tipo_laudo.sum()
+
+    # Adicionar o total de laudos ao DataFrame
+    total_por_tipo_laudo = total_por_tipo_laudo.reset_index()
+    total_por_tipo_laudo.columns = ['Tipo de Laudo', 'Quantidade de Laudos']
+    total_por_tipo_laudo.loc[len(total_por_tipo_laudo)] = ['Total', total_de_laudos]
+
+    # Exibir quadro com os totais
+    st.subheader("Quantidade de laudos por tipo")
+    st.write(total_por_tipo_laudo)
